@@ -25,9 +25,14 @@ while True:
             print("Packet lost!")
             continue
 
-        print(f"Received: {data.decode()}")
+        # Split and clean packet stream
+        for packet in data.decode().split("Packet "):
+            if packet.strip():
+                print(f"Received: Packet {packet.strip()}")
+
         time.sleep(0.5)
         conn.sendall(b"ACK")
+
 
     except ConnectionResetError:
         print("Connection reset by client.")
