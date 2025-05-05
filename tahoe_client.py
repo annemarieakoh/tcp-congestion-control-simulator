@@ -1,6 +1,7 @@
 import socket
 import time
 import matplotlib.pyplot as plt
+import csv
 
 HOST = '127.0.0.1'
 PORT = 12345
@@ -54,4 +55,11 @@ plt.title('TCP Tahoe: cwnd over Time')
 plt.xlabel('Time (s)')
 plt.ylabel('Congestion Window Size (cwnd)')
 plt.grid(True)
-plt.show()
+#plt.show()
+
+# Save cwnd history to CSV
+with open("tahoe_log.csv", "w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(["Time", "CWND"])
+    for t, w in zip(time_history, cwnd_history):
+        writer.writerow([t, w])
