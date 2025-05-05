@@ -2,7 +2,7 @@
 
 This project simulates different TCP congestion control algorithms (Tahoe, Reno, Cubic, BBR) using custom clients and a loss-simulating server.
 
-## 📌 How It Works
+##How It Works
 
 - `server.py`: Randomly drops packets to simulate network congestion.
 - Each client simulates one congestion control algorithm:
@@ -11,8 +11,7 @@ This project simulates different TCP congestion control algorithms (Tahoe, Reno,
   - `cubic_client.py`
   - `bbr_client.py`
 
-## 🚀 How to Run
+##How to Run
 
 1. Start the server:
-   ```bash
    python server.py
