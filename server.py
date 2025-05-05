@@ -15,17 +15,31 @@ conn, addr = server_socket.accept()
 print(f"Connected by {addr}")
 
 while True:
-    data = conn.recv(1024)
-    if not data:
+    try:
+        data = conn.recv(1024)
+        if not data:
+            print("Connection closed by client.")
+            break
+
+        if random.random() < PACKET_LOSS_RATE:
+            print("Packet lost!")
+            continue
+
+        # Split and clean packet stream
+        for packet in data.decode().split("Packet "):
+            if packet.strip():
+                print(f"Received: Packet {packet.strip()}")
+
+        time.sleep(0.5)
+        conn.sendall(b"ACK")
+
+
+    except ConnectionResetError:
+        print("Connection reset by client.")
         break
-
-    if random.random() < PACKET_LOSS_RATE:  # Simulating packet loss
-        print("Packet lost!")
-        continue
-
-    print(f"Received: {data.decode()}")
-    time.sleep(0.5)  # Simulate network delay
-    conn.sendall(b"ACK")
+    except ConnectionAbortedError:
+        print("Connection aborted by client.")
+        break
 
 conn.close()
 server_socket.close()
