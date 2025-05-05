@@ -1,18 +1,24 @@
 import socket
 import time
+import matplotlib.pyplot as plt
 
 HOST = '127.0.0.1'
 PORT = 12345
 
-initial_cwnd = 1  # Start slow
-ssthresh = 8  # Slow start threshold
-timeout = 1  # 1-second timeout for ACKs
+initial_cwnd = 1
+ssthresh = 8
+timeout = 1
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, PORT))
 
 cwnd = initial_cwnd
 seq_num = 0
+
+# For plotting
+cwnd_history = []
+time_history = []
+start_time = time.time()
 
 while seq_num < 20:
     print(f"Sending {cwnd} packets...")
@@ -26,14 +32,26 @@ while seq_num < 20:
         ack = client_socket.recv(1024)
         print("ACK received, increasing window size...")
         if cwnd < ssthresh:
-            cwnd *= 2  # Exponential increase (Slow Start)
+            cwnd *= 2
         else:
-            cwnd += 1  # Linear increase (Congestion Avoidance)
+            cwnd += 1
     except socket.timeout:
         print("Packet loss detected! Resetting to slow start...")
-        ssthresh = cwnd // 2  # Reduce threshold
-        cwnd = 1  # Reset to Slow Start
+        ssthresh = cwnd // 2
+        cwnd = 1
+
+    # Log cwnd value and timestamp
+    cwnd_history.append(cwnd)
+    time_history.append(time.time() - start_time)
 
     time.sleep(0.5)
 
 client_socket.close()
+
+# Plotting the cwnd vs. time
+plt.plot(time_history, cwnd_history, marker='o')
+plt.title('TCP Tahoe: cwnd over Time')
+plt.xlabel('Time (s)')
+plt.ylabel('Congestion Window Size (cwnd)')
+plt.grid(True)
+plt.show()
